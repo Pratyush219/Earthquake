@@ -3,6 +3,7 @@ package com.example.quakereport;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
         QuakeAdapter adapter = new QuakeAdapter(this);
         RecyclerView earthquakeListView = findViewById(R.id.list);
         ProgressBar progressBar = findViewById(R.id.progress_circular);
+        TextView emptyView = findViewById(R.id.text);
         // Instantiate the ViewModel
         mQuakeViewModel = new ViewModelProvider(this).get(QuakeViewModel.class);
         // Update liveData
@@ -27,9 +29,16 @@ public class MainActivity extends AppCompatActivity {
         earthquakeListView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         // Observe changes to live data and update UI
         mQuakeViewModel.getReport().observe(this, earthquakes -> {
-            if(earthquakes != null) adapter.setEarthquakes(mQuakeViewModel.getReport().getValue());
-            progressBar.setVisibility(View.GONE);
-            earthquakeListView.setVisibility(View.VISIBLE);
+            if(earthquakes == null) {
+                progressBar.setVisibility(View.GONE);
+                emptyView.setText("No report found");
+                emptyView.setVisibility(View.VISIBLE);
+            }
+            if(earthquakes != null) {
+                adapter.setEarthquakes(mQuakeViewModel.getReport().getValue());
+                progressBar.setVisibility(View.GONE);
+                earthquakeListView.setVisibility(View.VISIBLE);
+            }
         });
     }
 
